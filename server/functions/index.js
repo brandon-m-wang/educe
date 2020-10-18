@@ -10,7 +10,8 @@ const config = require('./util/config');
 
 // Post routes
 app.get('/posts', getAllPosts);
-app.post('/post', FBAuth, postOnePost);
+// app.post('/post', FBAuth, postOnePost);
+app.post('/post', postOnePost);
 app.get('/post/:postId', getPost);
 app.delete('/post/:postId/', FBAuth, deletePost);
 

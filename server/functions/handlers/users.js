@@ -9,11 +9,14 @@ const { validateSignupData, validateLoginData, reduceUserDetails } = require('..
 
 // sign users up
 exports.signUp = (req,res) => {
+    res.header("Access-Control-Allow-Origin", "YOUR-DOMAIN.TLD"); // update to match the domain you will make the request from
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+
     const newUser = {
         email: req.body.email,
         password: req.body.password,
         confirmPassword: req.body.confirmPassword,
-        handle: req.body.handle
+        handle: req.body.handle,
     };
 
     const { valid, errors } = validateSignupData(newUser);
@@ -24,7 +27,7 @@ exports.signUp = (req,res) => {
     db.doc(`/users/${newUser.handle}`).get()
         .then(doc => {
             if (doc.exists) {
-                return res.status(400).json({ handle: 'this handle is already taken'})
+                return res.status(400).json({ handle: 'this username is already taken'})
             } else {
                 return firebase.auth().createUserWithEmailAndPassword(newUser.email, newUser.password);
             }
@@ -39,7 +42,7 @@ exports.signUp = (req,res) => {
                 handle: newUser.handle,
                 email: newUser.email,
                 createdAt: new Date().toISOString(),
-                userId
+                userId,
             };
 
             return db.doc(`/users/${newUser.handle}`).set(userCredentials);
@@ -52,7 +55,7 @@ exports.signUp = (req,res) => {
             if (err.code == 'auth/email-already-in-use') {
                 return res.status(400).json({email : 'Email is already in use'})
             } else {
-                return res.status(500).json({ general: "Something went wrong, please try again"});
+                return res.status(500).json({general: "Something went wrong, please try again"});
             }
         })
 
@@ -60,6 +63,9 @@ exports.signUp = (req,res) => {
 
 // log users in
 exports.logIn = (req,res) => {
+    res.header("Access-Control-Allow-Origin", "YOUR-DOMAIN.TLD"); // update to match the domain you will make the request from
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+
     const user = {
         email: req.body.email,
         password: req.body.password
@@ -88,6 +94,9 @@ exports.logIn = (req,res) => {
 
 // add user details
 exports.addUserDetails = (req,res) => {
+    res.header("Access-Control-Allow-Origin", "YOUR-DOMAIN.TLD"); // update to match the domain you will make the request from
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+
     let userDetails = reduceUserDetails(req.body);
 
     db.doc(`/users/${req.user.handle}`).update(userDetails)

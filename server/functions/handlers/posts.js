@@ -10,6 +10,7 @@ exports.getAllPosts = (req, res) => {
             data.forEach(doc => {
                 posts.push({
                     postId: doc.id,
+                    title: doc.data().title,
                     body: doc.data().body,
                     userHandle: doc.data().userHandle,
                     createdAt: doc.data().createdAt
@@ -17,11 +18,15 @@ exports.getAllPosts = (req, res) => {
             });
             return res.json(posts);
         })
-        .catch(err => console.error(err));
+        .catch(err => res.error(err));
 }
 
 exports.postOnePost = (req,res) => {
+    res.header("Access-Control-Allow-Origin", "YOUR-DOMAIN.TLD"); // update to match the domain you will make the request from
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+
     const newPost = {
+        title: req.title.title,
         body: req.body.body,
         userHandle: req.user.handle,
         createdAt: new Date().toISOString()
