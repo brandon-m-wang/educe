@@ -94,6 +94,7 @@ export default function Album() {
     axios.post('/signup', userInfo)
         .then((res) => {
             console.log(res.data);
+            // TODO: success, redirect to the next page after user registration
         }).catch((err) => {
             setErrors(err.response.data)
         })
