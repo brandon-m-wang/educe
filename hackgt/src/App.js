@@ -119,7 +119,7 @@ export default function Album() {
                     <TextField
                       autoFocus
                       margin="dense"
-                      id="name"
+                      id="email"
                       label="Email Address"
                       type="email"
                       fullWidth
@@ -127,25 +127,25 @@ export default function Album() {
                     <TextField
                       autoFocus
                       margin="dense"
-                      id="name"
+                      id="password"
                       label="Password"
-                      type="email"
+                      type="password"
                       fullWidth
                     />
                     <TextField
                       autoFocus
                       margin="dense"
-                      id="name"
+                      id="confirmPassword"
                       label="Confirm Password"
-                      type="email"
+                      type="password"
                       fullWidth
                     />
                     <TextField
                       autoFocus
                       margin="dense"
-                      id="name"
+                      id="handle"
                       label="Username"
-                      type="email"
+                      type="text"
                       fullWidth
                     />
                   </DialogContent>
