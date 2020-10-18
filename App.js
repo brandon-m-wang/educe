@@ -72,17 +72,27 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Album() {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(false);
-
+  const [regOpen, setRegOpen] = useState(false);
+  const [reqOpen, setReqOpen] = useState(false);
+  const [resOpen, setResOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [handle, setHandle] = useState('');
-  const [errors, setErrors] = useState({});
+  // const [token, setToken] = useState('');
+  const [errors, setErrors] = useState([]);
 
-  const handleClickOpen = () => {
-    setOpen(true);
+  const handleRegOpen = () => {
+    setRegOpen(true);
   };
+
+  const handleReqOpen = () => {
+    setReqOpen(true);
+  };
+
+  const handleResOpen = () => {
+    setResOpen(true);
+  }
 
   const registrationCheck = () => {
     let userInfo = {
@@ -91,18 +101,76 @@ export default function Album() {
         confirmPassword: confirmPassword,
         handle: handle
     }
-    axios.post('/signup', userInfo)
+    axios.post('https://us-central1-hackgt-52008.cloudfunctions.net/api/signup', userInfo)
         .then((res) => {
             console.log(res.data);
-            // TODO: success, redirect to the next page after user registration
+            // setToken(res.data.token);
+            handleRegClose();
+            handleReqOpen();
         }).catch((err) => {
             setErrors(err.response.data)
         })
   };
 
-  const handleClose = () => {
-    setOpen(false);
+  const [title, setTitle] = useState('');
+  const [body, setBody] = useState('');
+  const [url, setURL] = useState('');
+  const [newPost, setNewPost] = useState([]);
+
+  const createPost = () => {
+      setNewPost([{
+        title: title,
+        body: body
+      }])
+      console.log(title,body, newPost);
+      // const {headers} = {"Authorization" : 'Bearer ' + token}
+      axios.post('https://us-central1-hackgt-52008.cloudfunctions.net/api/post', newPost)
+        .then((res) => {
+          console.log(res.data);
+          handleReqClose();
+        })
+        .catch(err => console.log('Errors: ', err))
+      handleReqClose();
+  }
+
+  var update = newPost.length > 0 ? newPost.map(item => (
+                <Card className={classes.card}>
+                  <CardMedia
+                    className={classes.cardMedia}
+                    image = {url}
+                    title="Image title"
+                  />
+                  <CardContent className={classes.cardContent}>
+                    <Typography gutterBottom variant="h6" component="h2">
+                      {item.title}
+                    </Typography>
+                    <Typography>
+                      {item.body}  
+                    </Typography>
+                  </CardContent>
+                  <CardActions>
+                    <Button size="small" color="primary"> 
+                      View
+                    </Button>
+                    <Button size="small" color="primary">
+                      Contact
+                    </Button>
+                  </CardActions>
+                </Card>
+  )) : null;
+
+  console.log(update);
+
+  const handleRegClose = () => {
+    setRegOpen(false);
   };
+  const handleReqClose = () => {
+    setReqOpen(false);
+  };
+  const handleResClose = () => {
+    setResOpen(false);
+  }
+
   return (
     <React.Fragment>
       <CssBaseline />
@@ -127,10 +195,10 @@ export default function Album() {
             <div className={classes.heroButtons}>
               <Grid container spacing={2} justify="center">
                 <Grid item>
-                  <Button variant="contained" color="secondary" onClick={handleClickOpen}>
+                  <Button variant="contained" color="secondary" onClick={handleRegOpen}>
                     Register
                   </Button>
-                  <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+                  <Dialog open={regOpen} onClose={handleRegClose} aria-labelledby="form-dialog-title">
                   <DialogTitle id="form-dialog-title">Sign Up for Educe</DialogTitle>
                   <DialogContent>
                     <DialogContentText>
@@ -178,7 +246,7 @@ export default function Album() {
                     />
                   </DialogContent>
                   <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={handleRegClose} color="primary">
             Cancel
           </Button>
           <Button onClick={registrationCheck} color="primary">
@@ -188,9 +256,52 @@ export default function Album() {
       </Dialog>
                 </Grid>
                 <Grid item>
-                  <Button variant="outlined" color="inherit">
-                    See random request
+                  <Button variant="outlined" color="inherit" onClick={handleReqOpen}>
+                    Request
                   </Button>
+                  <Dialog open={reqOpen} onClose={handleReqClose} aria-labelledby="form-dialog-title">
+                  <DialogTitle id="form-dialog-title">Request</DialogTitle>
+                  <DialogContent>
+                    <DialogContentText>
+                      Submit your request
+                    </DialogContentText>
+                    <TextField
+                      autoFocus
+                      margin="dense"
+                      id="title"
+                      label="Name, Location, Request"
+                      type="text"
+                      onChange = {e => setTitle(e.target.value)}
+                      fullWidth
+                    />
+                    <TextField
+                      autoFocus
+                      margin="dense"
+                      id="body"
+                      label="Description"
+                      type="text"
+                      onChange = {e => setBody(e.target.value)}
+                      fullWidth
+                    />
+                    <TextField
+                      autoFocus
+                      margin="dense"
+                      id="url"
+                      label="Image URL"
+                      type="text"
+                      onChange = {e => setURL(e.target.value)}
+                      fullWidth
+                    />
+                  </DialogContent>
+                  <DialogActions>
+          <Button onClick={handleReqClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={createPost} color="primary">
+            Post
+          </Button>
+        </DialogActions>
+      </Dialog>
                 </Grid>
               </Grid>
             </div>
@@ -218,9 +329,52 @@ export default function Album() {
                     <Button size="small" color="primary"> 
                       View
                     </Button>
-                    <Button size="small" color="primary">
+                    <Button size="small" color="primary" onClick = {handleResOpen}>
                       Contact
                     </Button>
+                    <Dialog open={resOpen} onClose={handleResClose} aria-labelledby="form-dialog-title">
+                  <DialogTitle id="form-dialog-title">Outreach</DialogTitle>
+                  <DialogContent>
+                    <DialogContentText>
+                      Thanks for your contributions!
+                    </DialogContentText>
+                    <TextField
+                      autoFocus
+                      margin="dense"
+                      id="title"
+                      label="E-mail"
+                      type="text"
+                      onChange = {e => setTitle(e.target.value)}
+                      fullWidth
+                    />
+                    <TextField
+                      autoFocus
+                      margin="dense"
+                      id="body"
+                      label="Message"
+                      type="text"
+                      onChange = {e => setBody(e.target.value)}
+                      fullWidth
+                    />
+                    <TextField
+                      autoFocus
+                      margin="dense"
+                      id="url"
+                      label="Product Specs"
+                      type="text"
+                      onChange = {e => setURL(e.target.value)}
+                      fullWidth
+                    />
+                  </DialogContent>
+                  <DialogActions>
+          <Button onClick={handleResClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={createPost} color="primary">
+            Send
+          </Button>
+        </DialogActions>
+      </Dialog>
                   </CardActions>
                 </Card>
               </Grid>
@@ -399,6 +553,7 @@ export default function Album() {
                   </CardActions>
                 </Card>
               </Grid>
+              <Grid container item xs={12} sm={6} md={4}>{update}</Grid>
           </Grid>
         </Container>
       </main>
