@@ -8,6 +8,14 @@ const FBAuth = require('./util/fbAuth');
 
 const config = require('./util/config');
 
+app.use((req,res,next) => {
+    res.header("Access-Control-Allow-Origin","*");
+    // res.headers("Access-Control-Allow-Headers","Origin, X-Requested-With, Content-type, Accept");
+    res.header("Access-Control-Allow-Method", "GET, POST");
+    res.header("Access-Control-Allow-Headers", "Content-Type")
+    next();
+})
+
 // Post routes
 app.get('/posts', getAllPosts);
 // app.post('/post', FBAuth, postOnePost);
